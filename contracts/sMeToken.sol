@@ -8,10 +8,7 @@ import '@openzeppelin/contracts/utils/Address.sol';
 import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
-// File: browser/Ownable.sol
-
-
-pragma solidity ^0.6.0;
+pragma solidity ^0.6.12;
 
 contract sMeToken is ERC20("sMe Token", "SME"), ERC20Burnable, Ownable {
     mapping(address => bool) private admin;
