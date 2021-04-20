@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
 
 import '@openzeppelin/contracts/utils/Context.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
-import '@openzeppelin/contracts/utils/Address.sol';
-import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.0;
 
 contract sMeToken is ERC20("sMe Token", "SME"), ERC20Burnable, Ownable {
     mapping(address => bool) private admin;
@@ -67,7 +64,7 @@ contract sMeToken is ERC20("sMe Token", "SME"), ERC20Burnable, Ownable {
     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         require(isWhitelisted(recipient), "Unauthorized transfer");
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), allowance(sender, recipient).sub(amount, "ERC20: transfer amount exceeds allowance"));
+        _approve(sender, _msgSender(), allowance(sender, recipient) - amount);
         return true;
     }
 }
