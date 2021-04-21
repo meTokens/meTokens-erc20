@@ -2,18 +2,17 @@
 
 import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 pragma solidity ^0.8.0;
 
-contract sMeToken is ERC20("sMe Token", "SME"), ERC20Burnable, Ownable {
+contract sMeToken is ERC20("sMe Token", "SME"), Ownable {
     mapping(address => bool) private admin;
     mapping(address => bool) private whitelist;
     uint8 private _decimals;
     uint256 private _totalSupply;
     
-    constructor (uint256 totalSupply_) public {
+    constructor (uint256 totalSupply_) {
         _totalSupply = totalSupply_;
         _decimals = 18;
     }

@@ -1,8 +1,8 @@
 {
-  "name": "metoken",
+  "name": "metokens-erc20-contracts",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/Unilayer/metokens-erc20.git",
+  "repository": "https://github.com/metokens/metokens-erc20.git",
   "license": "MIT",
   "scripts": {
     "setup": "node ./scripts/AuthToken.scripts.js",
@@ -11,14 +11,18 @@
     "test": "truffle test ./test/*",
     "test:rinkeby": "truffle test ./test/* --network rinkeby",
     "start-blank": "rm -rf client/src && cp -rf barebones/src client/",
-    "flat:token": "truffle-flattener contracts/meToken.sol > flats/meToken_flat.sol",
-    "verify:token": "truffle run verify meToken --network rinkeby --license SPDX-License-Identifier",
+    "flat:me": "truffle-flattener contracts/meToken.sol > flats/meToken_flat.sol",
+    "flat:sme": "truffle-flattener contracts/sMeToken.sol > flats/sMeToken_flat.sol",
+    "flat:swap": "truffle-flattener contracts/SwapContract.sol > flats/SwapContract_flat.sol",
+    "verify:me": "truffle run verify meToken --network rinkeby --license SPDX-License-Identifier",
+    "verify:sme": "truffle run verify sMeToken --network rinkeby --license SPDX-License-Identifier",
+    "verify:swap": "truffle run verify SwapContract --network rinkeby --license SPDX-License-Identifier",
     "client": "cd client && npm run start",
     "migrate": "truffle migrate --reset",
     "migrate:rinkeby": "truffle migrate --reset --network rinkeby"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.2.0",
+    "@openzeppelin/contracts": "^4.0.0",
     "@truffle/hdwallet-provider": "^1.1.0",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
