@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
-
 pragma experimental ABIEncoderV2;
 
 contract meToken {
@@ -15,7 +14,7 @@ contract meToken {
     uint8 public constant decimals = 18;
 
     /// @notice Total number of tokens in circulation
-    uint public totalSupply = 1_000_000_000e18; // 1 billion Me
+    uint public totalSupply = 1_000_000e18; // 1 million Me
 
     /// @notice Address which may mint new tokens
     address public minter;
@@ -27,7 +26,7 @@ contract meToken {
     uint32 public constant minimumTimeBetweenMints = 1 days * 365;
 
     /// @notice Cap on the percentage of totalSupply that can be minted at each mint
-    uint8 public constant mintCap = 2;
+    uint8 public constant mintCap = 5;
 
     // Allowance amounts on behalf of others
     mapping (address => mapping (address => uint96)) internal allowances;
@@ -76,6 +75,9 @@ contract meToken {
 
     /// @notice The standard EIP-20 approval event
     event Approval(address indexed owner, address indexed spender, uint256 amount);
+
+    /// @notice The standard EIP-20 burn event
+    event Burn(address indexed burner, uint256 amount);
 
     /**
      * @notice Construct a new Me token
@@ -129,6 +131,20 @@ contract meToken {
         _moveDelegates(address(0), delegates[dst], amount);
     }
 
+    /**
+     * @notice Burns tokens
+     * @param rawAmount The number of tokens to be burned
+     */
+
+    function burn(uint rawAmount) public {
+        uint96 amount = safe96(rawAmount, "Me::burn: amount exceeds 96 bits");
+        require(amount <= balances[msg.sender]);
+        balances[msg.sender] = balances[msg.sender] - amount;
+        totalSupply = totalSupply - amount;
+        emit Burn(msg.sender, amount);
+        emit Transfer(msg.sender, address(0), amount);
+    }
+    
     /**
      * @notice Get the number of tokens `spender` is approved to spend on behalf of `account`
      * @param account The address of the account holding the funds
