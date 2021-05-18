@@ -12,11 +12,7 @@
     "test:rinkeby": "truffle test ./test/* --network rinkeby",
     "start-blank": "rm -rf client/src && cp -rf barebones/src client/",
     "flat:me": "truffle-flattener contracts/meToken.sol > flats/meToken_flat.sol",
-    "flat:sme": "truffle-flattener contracts/sMeToken.sol > flats/sMeToken_flat.sol",
-    "flat:swap": "truffle-flattener contracts/SwapContract.sol > flats/SwapContract_flat.sol",
     "verify:me": "truffle run verify meToken --network rinkeby --license SPDX-License-Identifier",
-    "verify:sme": "truffle run verify sMeToken --network rinkeby --license SPDX-License-Identifier",
-    "verify:swap": "truffle run verify SwapContract --network rinkeby --license SPDX-License-Identifier",
     "client": "cd client && npm run start",
     "migrate": "truffle migrate --reset",
     "migrate:rinkeby": "truffle migrate --reset --network rinkeby"

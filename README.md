@@ -4,7 +4,7 @@
 
 ## Contract Addresses
 
-- [MeToken.sol](https://rinkeby.etherscan.io/address/0x56205efE26C4C7348ff7C6B3f76fb1E826316D6f): 0x56205efE26C4C7348ff7C6B3f76fb1E826316D6f
+- [MeToken.sol](https://rinkeby.etherscan.io/address/0x3cA2bB16272FFbAEE1bcc2c73Ee28Ab7D5A02CF4): 0x3cA2bB16272FFbAEE1bcc2c73Ee28Ab7D5A02CF4 
 
 - [sMeToken.sol](https://rinkeby.etherscan.io/address/0x7d6B186af2abcA2A446599a2722970E63E32D6d4): 0x7d6B186af2abcA2A446599a2722970E63E32D6d4
 
