@@ -22,9 +22,6 @@ contract meToken {
     /// @notice The timestamp after which minting may occur
     uint public mintingAllowedAfter;
 
-    /// @notice Minimum time between mints
-    uint32 public constant minimumTimeBetweenMints = 1 days * 365;
-
     /// @notice Cap on the percentage of totalSupply that can be minted at each mint
     uint8 public constant mintCap = 5;
 
@@ -116,7 +113,7 @@ contract meToken {
         require(dst != address(0), "Me::mint: cannot transfer to the zero address");
 
         // record the mint
-        mintingAllowedAfter = block.timestamp + minimumTimeBetweenMints;
+        mintingAllowedAfter = block.timestamp;
 
         // mint the amount
         uint96 amount = safe96(rawAmount, "Me::mint: amount exceeds 96 bits");
