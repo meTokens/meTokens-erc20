@@ -17,7 +17,7 @@ contract meToken {
     uint public totalSupply = 1_000_000e18; // 1 million Me
 
     /// @notice Address which may mint new tokens
-    address public minter;
+    address public minter = msg.sender;
 
     /// @notice Cap on the percentage of totalSupply that can be minted at each mint
     uint8 public constant mintCap = 5;
@@ -75,14 +75,10 @@ contract meToken {
 
     /**
      * @notice Construct a new Me token
-     * @param account The initial account to grant all the tokens
-     * @param minter_ The account with minting ability
      */
-    constructor(address account, address minter_) {
-
-        balances[account] = uint96(totalSupply);
-        emit Transfer(address(0), account, totalSupply);
-        minter = minter_;
+    constructor() {
+        balances[msg.sender] = uint96(totalSupply);
+        emit Transfer(address(0), msg.sender, totalSupply);
         emit MinterChanged(address(0), minter);
     }
 
