@@ -19,9 +19,6 @@ contract meToken {
     /// @notice Address which may mint new tokens
     address public minter;
 
-    /// @notice The timestamp after which minting may occur
-    uint public mintingAllowedAfter;
-
     /// @notice Cap on the percentage of totalSupply that can be minted at each mint
     uint8 public constant mintCap = 5;
 
@@ -80,16 +77,13 @@ contract meToken {
      * @notice Construct a new Me token
      * @param account The initial account to grant all the tokens
      * @param minter_ The account with minting ability
-     * @param mintingAllowedAfter_ The timestamp after which minting may occur
      */
-    constructor(address account, address minter_, uint mintingAllowedAfter_) {
-        require(mintingAllowedAfter_ >= block.timestamp, "Me::constructor: minting can only begin after deployment");
+    constructor(address account, address minter_) {
 
         balances[account] = uint96(totalSupply);
         emit Transfer(address(0), account, totalSupply);
         minter = minter_;
         emit MinterChanged(address(0), minter);
-        mintingAllowedAfter = mintingAllowedAfter_;
     }
 
     /**
@@ -109,11 +103,7 @@ contract meToken {
      */
     function mint(address dst, uint rawAmount) external {
         require(msg.sender == minter, "Me::mint: only the minter can mint");
-        require(block.timestamp >= mintingAllowedAfter, "Me::mint: minting not allowed yet");
         require(dst != address(0), "Me::mint: cannot transfer to the zero address");
-
-        // record the mint
-        mintingAllowedAfter = block.timestamp;
 
         // mint the amount
         uint96 amount = safe96(rawAmount, "Me::mint: amount exceeds 96 bits");
