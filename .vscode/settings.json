@@ -1,4 +1,5 @@
 {
     "solidity.compileUsingRemoteVersion": "v0.6.12+commit.27d51765",
-    "solidity.compileUsingLocalVersion": "/Users/Uni/Documents/GitHub/meTokens/meTokens-erc20/soljson-v0.6.12+commit.27d51765.js"
+    "solidity.compileUsingLocalVersion": "/Users/Uni/Documents/GitHub/meTokens/meTokens-erc20/soljson-v0.6.12+commit.27d51765.js",
+    "solidity.defaultCompiler": "remote"
 }
