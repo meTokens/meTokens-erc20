@@ -4,4 +4,4 @@
 
 ## Contract Addresses (Rinkeby)
 
-- [meTokens.sol](https://rinkeby.etherscan.io/address/0x318490ab26272fb6d6c349e3e71c1bf98dcf52ac#code): 0x318490ab26272fb6d6c349e3e71c1bf98dcf52ac
+- [meTokens.sol](https://rinkeby.etherscan.io/address/0x0de2b3395943840a1e214a8434acae29bfe25543#code): 0x0de2b3395943840a1e214a8434acae29bfe25543

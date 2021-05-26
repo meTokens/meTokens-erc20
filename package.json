@@ -1,6 +1,6 @@
 {
   "name": "metokens-erc20-contracts",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "index.js",
   "repository": "https://github.com/metokens/metokens-erc20.git",
   "license": "MIT",

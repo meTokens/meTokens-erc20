@@ -3,41 +3,32 @@
 pragma solidity ^0.6.12;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 
 // meTokens with Governance.
-contract meTokens is ERC20('meTokens', 'ME') {
-    
-    /// @notice An event emitted when the minter address is changed
-    event MinterChanged(address oldMinter, address newMinter);
+contract meTokens is ERC20('meTokens', 'ME'), ERC20Burnable, Ownable {
 
     /// @notice The timestamp after which minting may occur
-    uint256 public mintingAllowedAfter = block.timestamp + 365 days;
+    uint256 public mintingAllowedAfter;
 
-    /// @notice The minter has the ability to mint
-    address public minter = msg.sender;
+    /// @notice Launch meTokens
+    constructor() public {
+        mint(msg.sender, 1_000_000e18); // 1 million ME
+        mintingAllowedAfter = block.timestamp + 365 days;
+    }
 
     /**
     * @notice Creates `_amount` token to `_to`. Must only be called by the minter.
     * @param _to The address of the destination account
     * @param _amount The number of tokens to be minted
     */
-    
-    function mint(address _to, uint256 _amount) public {
-        require(msg.sender == minter, "ME::mint: minter only function");
-        require(block.timestamp >= mintingAllowedAfter, "ME::mint: minting not allowed yet");
 
+    function mint(address _to, uint256 _amount) public onlyOwner {
+        require(block.timestamp >= mintingAllowedAfter, "ME::mint: minting not allowed yet");
+        
         _mint(_to, _amount);
         _moveDelegates(address(0), _delegates[_to], _amount);
-    }
-
-    /**
-     * @notice Change the minter address
-     * @param _minter The address of the new minter
-     */
-    function setMinter(address _minter) public {
-        require(msg.sender == minter, "ME::setMinter: only the minter may change the minter address");
-        emit MinterChanged(minter, _minter);
-        minter = _minter;
     }
 
     // Copied and modified from YAM code:
