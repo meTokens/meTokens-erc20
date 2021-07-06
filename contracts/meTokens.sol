@@ -1,20 +1,23 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
+import '@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
-// meTokens with Governance.
-contract meTokens is ERC20('meTokens', 'ME'), ERC20Burnable, Ownable {
+
+/// @title meTokens erc20 contract
+/// @author @carlfarterson, @cryptounico
+/// @notice Base erc20 contract used for MeTokens protocol
+contract MeTokens is ERC20('meTokens', 'ME'), ERC20Burnable, Ownable {
 
     /// @notice The timestamp after which minting may occur
     uint256 public mintingAllowedAfter;
 
     /// @notice Launch meTokens
-    constructor() public {
-        mint(msg.sender, 1_000_000e18); // 1 million ME
+    constructor() {
+        mint(msg.sender, 1000000 * 10**18); // 1 million ME
         mintingAllowedAfter = block.timestamp + 365 days;
     }
 
@@ -31,10 +34,6 @@ contract meTokens is ERC20('meTokens', 'ME'), ERC20Burnable, Ownable {
         _moveDelegates(address(0), _delegates[_to], _amount);
     }
 
-    // Copied and modified from YAM code:
-    // https://github.com/yam-finance/yam-protocol/blob/master/contracts/token/YAMGovernanceStorage.sol
-    // https://github.com/yam-finance/yam-protocol/blob/master/contracts/token/YAMGovernance.sol
-    // Which is copied and modified from COMPOUND:
     // https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/Comp.sol
 
     // record of each accounts delegate
@@ -212,7 +211,7 @@ contract meTokens is ERC20('meTokens', 'ME'), ERC20Burnable, Ownable {
                 // decrease old representative
                 uint32 srcRepNum = numCheckpoints[srcRep];
                 uint256 srcRepOld = srcRepNum > 0 ? checkpoints[srcRep][srcRepNum - 1].votes : 0;
-                uint256 srcRepNew = srcRepOld.sub(amount);
+                uint256 srcRepNew = srcRepOld - amount;
                 _writeCheckpoint(srcRep, srcRepNum, srcRepOld, srcRepNew);
             }
 
@@ -220,7 +219,7 @@ contract meTokens is ERC20('meTokens', 'ME'), ERC20Burnable, Ownable {
                 // increase new representative
                 uint32 dstRepNum = numCheckpoints[dstRep];
                 uint256 dstRepOld = dstRepNum > 0 ? checkpoints[dstRep][dstRepNum - 1].votes : 0;
-                uint256 dstRepNew = dstRepOld.add(amount);
+                uint256 dstRepNew = dstRepOld + amount;
                 _writeCheckpoint(dstRep, dstRepNum, dstRepOld, dstRepNew);
             }
         }
@@ -251,7 +250,7 @@ contract meTokens is ERC20('meTokens', 'ME'), ERC20Burnable, Ownable {
         return uint32(n);
     }
 
-    function getChainId() internal pure returns (uint) {
+    function getChainId() internal view returns (uint) {
         uint256 chainId;
         assembly { chainId := chainid() }
         return chainId;
