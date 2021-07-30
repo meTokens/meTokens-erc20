@@ -4,19 +4,6 @@
   "main": "index.js",
   "repository": "https://github.com/metokens/metokens-erc20.git",
   "license": "MIT",
-  "scripts": {
-    "setup": "node ./scripts/AuthToken.scripts.js",
-    "login": "node ./scripts/AuthToken-isLogin.scripts.js",
-    "create": "node ./scripts/meToken.scripts.js",
-    "test": "truffle test ./test/*",
-    "test:rinkeby": "truffle test ./test/* --network rinkeby",
-    "start-blank": "rm -rf client/src && cp -rf barebones/src client/",
-    "flat:me": "truffle-flattener contracts/meTokens.sol > flats/meTokens_flat.sol",
-    "verify:me": "truffle run verify meToken --network rinkeby --license SPDX-License-Identifier",
-    "client": "cd client && npm run start",
-    "migrate": "truffle migrate --reset",
-    "migrate:rinkeby": "truffle migrate --reset --network rinkeby"
-  },
   "dependencies": {
     "@nomiclabs/hardhat-etherscan": "^2.1.3",
     "@nomiclabs/hardhat-truffle5": "^2.0.0",
