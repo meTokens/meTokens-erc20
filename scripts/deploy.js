@@ -1,5 +1,4 @@
 const { network: { provider }, expect, artifacts } = require('hardhat');
-const fs = require('fs')
 
 require('dotenv').config();
 
