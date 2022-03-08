@@ -22,17 +22,17 @@ abstract contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable 
     uint256 private lastMintPct;
 
     constructor() ERC20("meTokens", "ME") {
-        mint(msg.sender, 1000000 * 10**18); // 1 million ME
+        _mint(msg.sender, 1000000 * 10**18); // 1 million ME
         lastMintTimestamp = block.timestamp;
     }
 
 
-    function mint(address account, uint256 amount) public onlyOwner {
+    function mint(address account, uint256 amount) external onlyOwner {
         uint256 amountPct = PRECISION * amount / totalSupply();
         require(amountPct <= getPctMintable(), "amount exceeds max");
         
-        lastMintTimestamp = block.timestamp;
         lastMintPct = getPctMintable() - amountPct;
+        lastMintTimestamp = block.timestamp;
 
         _mint(account, amount);
     }
@@ -40,6 +40,13 @@ abstract contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable 
     function getChainId() external view returns (uint256) {
         return block.chainid;
     }
+
+/*
+period = 6 months
+% of year = 50%
+pctUnlockedToMint * 5% = 2.5%
+totalPctToMint = 2.5% + 0 = 2.5%
+*/
 
     function getPctMintable() public view returns (uint256) {
         uint256 period = block.timestamp - lastMintTimestamp;
