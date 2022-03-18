@@ -5,25 +5,23 @@ import {ERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import {ERC20Snapshot} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
 import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
-import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
+import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 
 /// @title meTokens erc20 contract (ME)
 /// @author @CBobRobison, @cartercarlson, @cryptounico
 /// @notice Base erc20 token used for meTokens protocol governance
-abstract contract MeTokens is
-    ERC20Votes,
-    ERC20Snapshot,
-    ERC20Burnable,
-    Ownable
-{
+contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
     uint256 constant PRECISION = 10e18;
     uint256 constant MAX_PCT_MINTABLE = 5 * 10e16; // 5%
     uint256 private lastMintTimestamp;
     uint256 private lastMintPct;
 
-    constructor() ERC20("meTokens", "ME") {
+    constructor(string memory name, string memory symbol)
+        ERC20(name, symbol)
+        ERC20Permit(name)
+    {
         _mint(msg.sender, 1000000 * 10**18); // 1 million ME
         lastMintTimestamp = block.timestamp;
     }
