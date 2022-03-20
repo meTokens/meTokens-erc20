@@ -14,9 +14,9 @@ import {EIP712} from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.so
 /// @notice Base erc20 token used for meTokens protocol governance
 contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
     uint256 constant PRECISION = 10e18;
-    uint256 constant MAX_PCT_MINTABLE = 5 * 10e16; // 5%
-    uint256 private lastMintTimestamp;
-    uint256 private lastMintPct;
+    uint256 constant MAX_PCT_MINTABLE = 5 * 1e16; // 5%
+    uint256 public lastMintTimestamp;
+    uint256 public lastMintPct;
 
     constructor(string memory name, string memory symbol)
         ERC20(name, symbol)
@@ -43,7 +43,7 @@ contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
     function getPctMintable() public view returns (uint256) {
         uint256 period = block.timestamp - lastMintTimestamp;
         uint256 pctOfYear = (PRECISION * period) / 365 days;
-        uint256 pctUnlockedToMint = MAX_PCT_MINTABLE * pctOfYear;
+        uint256 pctUnlockedToMint = (MAX_PCT_MINTABLE * pctOfYear) / PRECISION;
         uint256 totalPctToMint = pctUnlockedToMint + lastMintPct;
 
         return
