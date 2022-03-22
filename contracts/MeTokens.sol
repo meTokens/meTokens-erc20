@@ -8,6 +8,7 @@ import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Vo
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import "hardhat/console.sol";
 
 /// @title meTokens erc20 contract (ME)
 /// @author @CBobRobison, @cartercarlson, @cryptounico
@@ -29,9 +30,13 @@ contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
     function mint(address account, uint256 amount) external onlyOwner {
         uint256 amountPct = (PRECISION * amount) / totalSupply();
         uint256 _pctMintable = getPctMintable();
+        console.log("amountPct", amountPct);
+        console.log("_pctMintable", _pctMintable);
+
         require(amountPct <= _pctMintable, "amount exceeds max");
 
         lastMintPct = _pctMintable - amountPct;
+        console.log("lastMintPct", lastMintPct);
         lastMintTimestamp = block.timestamp;
 
         _mint(account, amount);
@@ -46,6 +51,10 @@ contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
         uint256 pctOfYear = (PRECISION * period) / 365 days;
         uint256 pctUnlockedToMint = (MAX_PCT_MINTABLE * pctOfYear) / PRECISION;
         uint256 totalPctToMint = pctUnlockedToMint + lastMintPct;
+        console.log("timestamp", block.timestamp);
+        // console.log("pctUnlockedToMint", pctUnlockedToMint);
+        // console.log("lastMintPct", lastMintPct);
+        // console.log("totalPctToMint", totalPctToMint);
 
         return
             totalPctToMint >= MAX_PCT_MINTABLE

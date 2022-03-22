@@ -1,10 +1,28 @@
 import { ethers, getNamedAccounts } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import { mineBlock, passHours, setAutomine } from "./utils/hardhatNode";
 import { deploy, getContractAt, fromETHNumber } from "./utils/helpers";
 import { ERC20, MeTokens } from "../artifacts/types";
+
+const calGetPctMintable = async (
+  timestamp: BigNumber,
+  lastMintTimestamp: BigNumber,
+  lastMintPct: BigNumber,
+  MAX_PCT_MINTABLE: BigNumber,
+  PRECISION: BigNumber
+) => {
+  const period = timestamp.sub(lastMintTimestamp);
+  const pctOfYear = period
+    .mul(PRECISION)
+    .div(BigNumber.from(365).mul(24 * 60 * 60));
+  const pctUnlockedToMint = pctOfYear.mul(MAX_PCT_MINTABLE).div(PRECISION);
+  const totalPctToMint = pctUnlockedToMint.add(lastMintPct);
+  return totalPctToMint >= BigNumber.from(MAX_PCT_MINTABLE)
+    ? BigNumber.from(MAX_PCT_MINTABLE)
+    : totalPctToMint;
+};
 
 const setup = async () => {
   const MAX_PCT_MINTABLE = fromETHNumber(0.05);
@@ -86,29 +104,52 @@ const setup = async () => {
       // fast-fwd an hr and get mintable supply
       let block = await ethers.provider.getBlock("latest");
       await mineBlock(block.timestamp + 60 * 60);
-      let mintableSupply = (await meTokens.totalSupply())
-        .mul(await meTokens.getPctMintable())
+
+      block = await ethers.provider.getBlock("latest");
+      await setAutomine(false);
+
+      const pctMintable = await calGetPctMintable(
+        BigNumber.from(block.timestamp).add(1), // adding one here as next tx is mined at timestamp+1
+        await meTokens.lastMintTimestamp(),
+        await meTokens.lastMintPct(),
+        MAX_PCT_MINTABLE,
+        PRECISION
+      );
+
+      const mintableSupply = (await meTokens.totalSupply())
+        .mul(pctMintable)
         .div(PRECISION);
 
-      // Fails when minting slightly more than the mintable supply
+      console.log("block.timestamp", String(block.timestamp));
+      console.log("pctMintable", String(pctMintable));
+      console.log("mintableSupply", String(mintableSupply));
+
+      console.log(
+        "reverse pctMintable",
+        String(mintableSupply.mul(PRECISION).div(await meTokens.totalSupply()))
+      );
+
       const tx = meTokens.mint(
         account2.address,
-        mintableSupply.mul(10000000).div(9999999)
+        mintableSupply.add(await meTokens.totalSupply())
       );
       await expect(tx).to.be.revertedWith("amount exceeds max");
 
       // Succeeds when minting the mintable supply
+      block = await ethers.provider.getBlock("latest");
       await meTokens.mint(account2.address, mintableSupply);
+
+      await setAutomine(true);
+      await mineBlock(block.timestamp + 1);
+      const lastMineTimestamp = block.timestamp + 1;
       expect(await meTokens.balanceOf(account2.address)).to.equal(
         mintableSupply
       );
 
-      block = await ethers.provider.getBlock("latest");
-      expect(await meTokens.lastMintTimestamp()).to.equal(
-        block.timestamp.toString()
-      );
+      expect(await meTokens.lastMintTimestamp()).to.equal(lastMineTimestamp);
       expect(await meTokens.getPctMintable()).to.equal("0");
       expect(await meTokens.lastMintPct()).to.equal("0");
+      await setAutomine(true);
     });
   });
 };
