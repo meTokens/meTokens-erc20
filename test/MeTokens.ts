@@ -118,6 +118,7 @@ const setup = async () => {
         .mul(pctMintable)
         .div(PRECISION);
 
+      // Fails when minting slightly more than the mintable supply
       const tx = meTokens.mint(account2.address, pctMintable.add(1));
       await expect(tx).to.be.revertedWith("amount exceeds max");
 
@@ -125,17 +126,16 @@ const setup = async () => {
       block = await ethers.provider.getBlock("latest");
       await meTokens.mint(account2.address, pctMintable);
 
-      await setAutomine(true);
-      await mineBlock(block.timestamp + 1);
       const lastMineTimestamp = block.timestamp + 1;
+      await mineBlock(lastMineTimestamp);
+      await setAutomine(true);
+
       expect(await meTokens.balanceOf(account2.address)).to.equal(
         mintableSupply
       );
-
       expect(await meTokens.lastMintTimestamp()).to.equal(lastMineTimestamp);
       expect(await meTokens.getPctMintable()).to.equal("0");
       expect(await meTokens.lastMintPct()).to.equal("0");
-      await setAutomine(true);
     });
   });
 };
