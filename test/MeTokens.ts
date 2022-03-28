@@ -1,10 +1,10 @@
-import { ethers, getNamedAccounts } from "hardhat";
+import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { BigNumber, Signer } from "ethers";
-import { mineBlock, passHours, setAutomine } from "./utils/hardhatNode";
-import { deploy, getContractAt, fromETHNumber } from "./utils/helpers";
-import { ERC20, MeTokens } from "../artifacts/types";
+import { BigNumber } from "ethers";
+import { mineBlock, setAutomine } from "./utils/hardhatNode";
+import { deploy, fromETHNumber } from "./utils/helpers";
+import { MeTokens } from "../artifacts/types";
 
 const calGetPctMintable = async (
   timestamp: BigNumber,
@@ -80,13 +80,11 @@ const setup = async () => {
         .mul(RANDOM_PCT)
         .div(PRECISION);
       // Fails when non-owner tries to mint
-      const tx = meTokens
-        .connect(account1)
-        .mint(account1.address, amountMinted);
+      const tx = meTokens.connect(account1).mint(account1.address, RANDOM_PCT);
       await expect(tx).to.be.revertedWith("Ownable: caller is not the owner");
 
       // Succeeds when owner mints
-      await meTokens.mint(account1.address, amountMinted);
+      await meTokens.mint(account1.address, RANDOM_PCT);
       expect(await meTokens.balanceOf(account1.address)).to.equal(amountMinted);
       expect(await meTokens.getPctMintable()).to.equal(
         MAX_PCT_MINTABLE.sub(RANDOM_PCT)
@@ -120,24 +118,12 @@ const setup = async () => {
         .mul(pctMintable)
         .div(PRECISION);
 
-      console.log("block.timestamp", String(block.timestamp));
-      console.log("pctMintable", String(pctMintable));
-      console.log("mintableSupply", String(mintableSupply));
-
-      console.log(
-        "reverse pctMintable",
-        String(mintableSupply.mul(PRECISION).div(await meTokens.totalSupply()))
-      );
-
-      const tx = meTokens.mint(
-        account2.address,
-        mintableSupply.add(await meTokens.totalSupply())
-      );
+      const tx = meTokens.mint(account2.address, pctMintable.add(1));
       await expect(tx).to.be.revertedWith("amount exceeds max");
 
       // Succeeds when minting the mintable supply
       block = await ethers.provider.getBlock("latest");
-      await meTokens.mint(account2.address, mintableSupply);
+      await meTokens.mint(account2.address, pctMintable);
 
       await setAutomine(true);
       await mineBlock(block.timestamp + 1);
