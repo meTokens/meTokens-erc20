@@ -26,13 +26,23 @@ contract MeTokens is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
         lastMintTimestamp = block.timestamp;
     }
 
-    function mint(address account, uint256 _pctMint) external onlyOwner {
-        uint256 amount = (totalSupply() * _pctMint) / PRECISION;
-        uint256 _pctMintable = getPctMintable();
+    function mint(
+        address account,
+        uint256 _pctMint,
+        bool max
+    ) external onlyOwner {
+        uint256 pctMintable = getPctMintable();
+        require(pctMintable > 0, "nothing to mint");
+        uint256 amount;
+        if (max) {
+            amount = (totalSupply() * pctMintable) / PRECISION;
+        } else {
+            require(_pctMint <= pctMintable, "amount exceeds max");
+            require(_pctMint != 0, "_pctMint == 0");
+            amount = (totalSupply() * _pctMint) / PRECISION;
+        }
 
-        require(_pctMint <= _pctMintable, "amount exceeds max");
-
-        lastMintPct = _pctMintable - _pctMint;
+        lastMintPct = pctMintable - _pctMint;
         lastMintTimestamp = block.timestamp;
 
         _mint(account, amount);

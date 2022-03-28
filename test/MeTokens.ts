@@ -80,11 +80,13 @@ const setup = async () => {
         .mul(RANDOM_PCT)
         .div(PRECISION);
       // Fails when non-owner tries to mint
-      const tx = meTokens.connect(account1).mint(account1.address, RANDOM_PCT);
+      const tx = meTokens
+        .connect(account1)
+        .mint(account1.address, RANDOM_PCT, false);
       await expect(tx).to.be.revertedWith("Ownable: caller is not the owner");
 
       // Succeeds when owner mints
-      await meTokens.mint(account1.address, RANDOM_PCT);
+      await meTokens.mint(account1.address, RANDOM_PCT, false);
       expect(await meTokens.balanceOf(account1.address)).to.equal(amountMinted);
       expect(await meTokens.getPctMintable()).to.equal(
         MAX_PCT_MINTABLE.sub(RANDOM_PCT)
@@ -96,6 +98,11 @@ const setup = async () => {
       expect(await meTokens.lastMintTimestamp()).to.equal(
         block.timestamp.toString()
       );
+    });
+
+    it("Cannot mint 0", async () => {
+      const tx = meTokens.mint(account2.address, 0, false);
+      await expect(tx).to.be.revertedWith("_pctMint == 0");
     });
 
     it("Owner cannot mint more than mintable supply", async () => {
@@ -119,12 +126,12 @@ const setup = async () => {
         .div(PRECISION);
 
       // Fails when minting slightly more than the mintable supply
-      const tx = meTokens.mint(account2.address, pctMintable.add(1));
+      let tx = meTokens.mint(account2.address, pctMintable.add(1), false);
       await expect(tx).to.be.revertedWith("amount exceeds max");
 
       // Succeeds when minting the mintable supply
       block = await ethers.provider.getBlock("latest");
-      await meTokens.mint(account2.address, pctMintable);
+      await meTokens.mint(account2.address, pctMintable, false);
 
       const lastMineTimestamp = block.timestamp + 1;
       await mineBlock(lastMineTimestamp);
