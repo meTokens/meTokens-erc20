@@ -1,4 +1,8 @@
 artifacts
+abi/
+
+cache
+artifacts
 
 # Logs
 logs
@@ -104,3 +108,4 @@ dist
 
 # TernJS port file
 .tern-port
+deployments/hardhat.json
