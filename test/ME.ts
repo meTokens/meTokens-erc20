@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { mineBlock, setAutomine } from "./utils/hardhatNode";
 import { deploy, fromETHNumber } from "./utils/helpers";
-import { MeTokens } from "../artifacts/types";
+import { ME } from "../artifacts/types";
 
 const calGetPctMintable = async (
   timestamp: BigNumber,
@@ -29,19 +29,14 @@ const setup = async () => {
   const ONE_PCT = fromETHNumber(0.01);
   const RANDOM_PCT = fromETHNumber(0.0000069);
   const PRECISION = fromETHNumber(1);
-  let meTokens: MeTokens;
+  let meTokens: ME;
   let account0: SignerWithAddress;
   let account1: SignerWithAddress;
   let account2: SignerWithAddress;
-  describe("MeTokens.sol", () => {
+  describe("ME.sol", () => {
     before(async () => {
       [account0, account1, account2] = await ethers.getSigners();
-      meTokens = await deploy<MeTokens>(
-        "MeTokens",
-        undefined,
-        "meTokens",
-        "ME"
-      );
+      meTokens = await deploy<ME>("ME", undefined, "meTokens", "ME");
     });
 
     it("Correct initial state", async () => {
@@ -102,7 +97,7 @@ const setup = async () => {
 
     it("Cannot mint 0", async () => {
       const tx = meTokens.mint(account2.address, 0, false);
-      await expect(tx).to.be.revertedWith("_pctMint == 0");
+      await expect(tx).to.be.revertedWith("pctMint == 0");
     });
 
     it("Owner cannot mint more than mintable supply", async () => {
