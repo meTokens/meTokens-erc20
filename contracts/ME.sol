@@ -18,6 +18,11 @@ contract ME is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
     uint256 public lastMintTimestamp;
     uint256 public lastMintPct;
 
+    /**
+     * @dev Constructor.
+     * @param name The name for this token.
+     * @param symbol The symbol for this token.
+     */
     constructor(string memory name, string memory symbol)
         ERC20(name, symbol)
         ERC20Permit(name)
@@ -52,6 +57,7 @@ contract ME is ERC20Votes, ERC20Snapshot, ERC20Burnable, Ownable {
         _mint(account, amount);
     }
 
+    /// @notice Returns the chain id used by this contract.
     function getChainId() external view returns (uint256) {
         return block.chainid;
     }
